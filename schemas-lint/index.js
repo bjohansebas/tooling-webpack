@@ -50,6 +50,7 @@ for (const filename of schemas) {
 			"tsType",
 			"not",
 			"link",
+			"deprecated",
 		];
 
 		const isReference = (schema) => {
@@ -125,7 +126,7 @@ for (const filename of schemas) {
 					process.exitCode = 1;
 				}
 			}
-
+		
 			if ("properties" in item || "additionalProperties" in item) {
 				if (item.type !== "object") {
 					console.log(
