@@ -109,6 +109,7 @@ const schemas = glob.sync(schemasGlob, { cwd: root, absolute: true });
 const EXCLUDED_PROPERTIES = [
 	"title",
 	"description",
+	"deprecated",
 	"cli",
 	"implements",
 	"tsType",
