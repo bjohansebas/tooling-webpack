@@ -621,12 +621,34 @@ const printError = (diagnostic) => {
 	 */
 	const getDocumentation = (symbol) => {
 		if (!symbol) return "";
-		const comments = symbol.getDocumentationComment(checker);
-		if (comments.length === 0) return "";
-		return `\n/**\n * ${comments
-			.map((c) => c.text)
-			.join("")
-			.replace(/\n+/g, "\n * ")}\n */\n`;
+		const normalizeText = (parts) =>
+			ts
+				.displayPartsToString(parts || [])
+				.replace(/\r\n?/g, "\n")
+				.replace(/\n+/g, "\n")
+				.trim();
+
+		let commentText = normalizeText(symbol.getDocumentationComment(checker));
+		const deprecatedTags = symbol
+			.getJsDocTags(checker)
+			.filter((tag) => tag.name === "deprecated");
+
+		if (!commentText && deprecatedTags.length === 0) return "";
+
+		const lines = commentText ? commentText.split("\n") : [];
+		for (const tag of deprecatedTags) {
+			const text = normalizeText(tag.text);
+			if (text && !commentText) {
+				lines.push(...text.split("\n"));
+				lines.push("@deprecated");
+			} else {
+				lines.push(text ? `@deprecated ${text}` : "@deprecated");
+			}
+		}
+
+		return `\n/**\n${lines
+			.map((line) => (line ? ` * ${line}` : " *"))
+			.join("\n")}\n */\n`;
 	};
 
 	/**
