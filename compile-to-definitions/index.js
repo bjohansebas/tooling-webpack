@@ -118,6 +118,7 @@ const preprocessSchema = (schema, root = schema, path = []) => {
 				}
 				schema.properties[key] = {
 					description: result.description,
+					deprecated: result.deprecated,
 					anyOf: [property],
 				};
 			} else if (
@@ -128,6 +129,7 @@ const preprocessSchema = (schema, root = schema, path = []) => {
 				const result = resolvePath(root, property.oneOf[0].$ref);
 				schema.properties[key] = {
 					description: property.description || result.description,
+					deprecated: property.deprecated || result.deprecated,
 					anyOf: property.oneOf,
 				};
 				preprocessSchema(schema.properties[key], root, [...path, key]);
